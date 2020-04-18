@@ -87,7 +87,7 @@ class MCTracker(object):
                 self.model.cuda()
                 # DistributedDataParallel will divide and allocate batch_size to all
                 # available GPUs if device_ids are not set
-                model = torch.nn.parallel.DistributedDataParallel(self.model)
+                self.model = torch.nn.parallel.DistributedDataParallel(self.model)
         elif self.opt.gpu is not None:
             torch.cuda.set_device(self.opt.gpu)
             self.model = self.model.cuda(self.opt.gpu)
