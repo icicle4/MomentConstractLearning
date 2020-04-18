@@ -7,6 +7,7 @@ CHECKPOINTPATH='/content/drive/My Drive/checkpoint_0105.pth.tar'
 
 python track.py --val_mot15 $VAL_MOT15  \
                 --dis_threshold $DIS_THRESHOLD \
-                --load_model $CHECKPOINTPATH
+                --load_model $CHECKPOINTPATH \
+                --data_dir $DATA_DIR
 
 
