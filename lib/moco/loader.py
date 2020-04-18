@@ -4,6 +4,7 @@ import random
 from torchvision import transforms
 import cv2
 from PIL import Image
+import numpy as np
 
 normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                  std=[0.229, 0.224, 0.225])
@@ -15,7 +16,8 @@ augmentations = [
 ]
 
 def warp_clip(clip):
-    clip = Image.fromarray(cv2.cvtColor(clip, cv2.COLOR_BGR2RGB))
+    warped_clip = np.copy(clip)
+    clip = Image.fromarray(cv2.cvtColor(warped_clip, cv2.COLOR_BGR2RGB))
     return transforms.Compose(augmentations)(clip)
 
 class TwoCropsTransform:
