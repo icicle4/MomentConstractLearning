@@ -11,15 +11,15 @@ import motmetrics as mm
 import numpy as np
 import torch
 
-from tracker.multitracker import MCTracker
-from tracking_utils import visualization as vis
-from tracking_utils.log import logger
-from tracking_utils.timer import Timer
-from tracking_utils.evaluation import Evaluator
-import datasets.dataset.dataset as datasets
+from lib.tracker.multitracker import MCTracker
+from lib.tracking_utils import visualization as vis
+from lib.tracking_utils.log import logger
+from lib.tracking_utils.timer import Timer
+from lib.tracking_utils.evaluation import Evaluator
+from lib.datasets.dataset import dataset
 
-from tracking_utils.utils import mkdir_if_missing
-from opts import opts
+from lib.tracking_utils.utils import mkdir_if_missing
+from lib.opts import opts
 
 
 def write_results(filename, results, data_type):
@@ -44,7 +44,7 @@ def write_results(filename, results, data_type):
     logger.info('save results to {}'.format(filename))
 
 
-def eval_seq(opt, dataloader, data_type, result_filename, save_dir=None, show_image=True, frame_rate=30):
+def eval_seq(opt, dataloader, data_type, result_filename, save_dir=None, show_image=True):
     if save_dir:
         mkdir_if_missing(save_dir)
 
@@ -98,14 +98,13 @@ def main(opt, data_root='/data/MOT16/train', det_root=None, seqs=('MOT16-05',), 
     for seq in seqs:
         output_dir = os.path.join(data_root, '..', 'outputs', exp_name, seq) if save_images or save_videos else None
         logger.info('start seq: {}'.format(seq))
-        dataloader = datasets.load_frame_clips(osp.join(data_root, seq, 'img1'),
-                                               osp.join(data_root, seq, 'det', 'det.txt')
+        dataloader = dataset.load_frame_clips(osp.join(data_root, seq, 'img1'),
+                                              osp.join(data_root, seq, 'det', 'det.txt')
                                                )
         result_filename = os.path.join(result_root, '{}.txt'.format(seq))
-        meta_info = open(os.path.join(data_root, seq, 'seqinfo.ini')).read()
-        frame_rate = int(meta_info[meta_info.find('frameRate') + 10:meta_info.find('\nseqLength')])
+
         nf, ta, tc = eval_seq(opt, dataloader, data_type, result_filename,
-                              save_dir=output_dir, show_image=show_image, frame_rate=frame_rate)
+                              save_dir=output_dir, show_image=show_image)
         n_frame += nf
         timer_avgs.append(ta)
         timer_calls.append(tc)

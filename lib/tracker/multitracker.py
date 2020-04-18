@@ -1,16 +1,13 @@
 from collections import deque
 
-import numpy as np
-import torch
-import torch.nn.functional as F
 import torchvision.models as models
-
-from tracking_utils.log import logger
-from tracking_utils.utils import *
-from moco import builder
 from munkres import Munkres
 from scipy.spatial import distance
-from moco.loader import warp_clip
+
+from lib.tracking_utils.utils import *
+from lib.moco import builder
+from lib.moco.loader import warp_clip
+
 
 def py_max_match(scores):
     m = Munkres()
