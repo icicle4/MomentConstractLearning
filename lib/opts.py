@@ -15,11 +15,8 @@ class opts(object):
     self.parser = argparse.ArgumentParser()
     # basic experiment setting
     self.parser.add_argument('task', default='mot', help='mot')
-    self.parser.add_argument('--dataset', default='jde', help='jde')
     self.parser.add_argument('--exp_id', default='default')
     self.parser.add_argument('--test', action='store_true')
-    #self.parser.add_argument('--load_model', default='../models/ctdet_coco_dla_2x.pth',
-                             #help='path to pretrained model')
     self.parser.add_argument('--load_model', default='',
                              help='path to pretrained model')
 
@@ -83,9 +80,7 @@ class opts(object):
     self.parser.add_argument('--val_mot17', default=False, help='val mot17')
     self.parser.add_argument('--val_mot20', default=False, help='val mot20')
     self.parser.add_argument('--test_mot20', default=False, help='test mot20')
-    self.parser.add_argument('--conf_thres', type=float, default=0.6, help='confidence thresh for tracking')
-    self.parser.add_argument('--det_thres', type=float, default=0.3, help='confidence thresh for detection')
-    self.parser.add_argument('--nms_thres', type=float, default=0.4, help='iou thresh for nms')
+
     self.parser.add_argument('--track_buffer', type=int, default=30, help='tracking buffer')
 
     self.parser.add_argument('--input-video', type=str, default='../videos/MOT16-03.mp4', help='path to the input video')
@@ -140,20 +135,6 @@ class opts(object):
     return opt
 
   def update_dataset_info_and_set_heads(self, opt, dataset):
-    input_h, input_w = dataset.default_resolution
-    opt.mean, opt.std = dataset.mean, dataset.std
-    opt.num_classes = dataset.num_classes
-
-    # input_h(w): opt.input_h overrides opt.input_res overrides dataset default
-    input_h = opt.input_res if opt.input_res > 0 else input_h
-    input_w = opt.input_res if opt.input_res > 0 else input_w
-    opt.input_h = opt.input_h if opt.input_h > 0 else input_h
-    opt.input_w = opt.input_w if opt.input_w > 0 else input_w
-    opt.output_h = opt.input_h // opt.down_ratio
-    opt.output_w = opt.input_w // opt.down_ratio
-    opt.input_res = max(opt.input_h, opt.input_w)
-    opt.output_res = max(opt.output_h, opt.output_w)
-
     if opt.task == 'mot':
       opt.heads = {'hm': opt.num_classes,
                    'wh': 2 if not opt.cat_spec_wh else 2 * opt.num_classes,
