@@ -55,9 +55,8 @@ class MCTracker(object):
             models.__dict__[opt.arch],
             opt.moco_dim, opt.moco_k, opt.moco_m, opt.moco_t, opt.mlp
         )
-        self.model.cuda()
-        self.model = torch.nn.parallel.DistributedDataParallel(self.model)
-    
+        self.model = self.model.cuda()
+        
         checkpoint = torch.load(opt.checkpoint)
         self.model.load_state_dict(checkpoint['state_dict'])
         self.model.eval()
