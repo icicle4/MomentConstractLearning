@@ -126,7 +126,7 @@ class opts(object):
     def init(self, args=''):
         opt = self.parse(args)
 
-        if opt.dist_url == "env://" and args.world_size == -1:
+        if opt.dist_url == "env://" and opt.world_size == -1:
             opt.world_size = int(os.environ["WORLD_SIZE"])
 
         opt.distributed = opt.world_size > 1 or opt.multiprocessing_distributed

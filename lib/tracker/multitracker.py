@@ -61,7 +61,8 @@ class MCTracker(object):
             if self.opt.multiprocessing_distributed:
                 # For multiprocessing distributed training, rank needs to be the
                 # global rank among all the processes
-                self.opt.rank = self.opt.rank * self.opt.ngpus_per_node + self.opt.gpu
+                pass
+
             dist.init_process_group(backend=self.opt.dist_backend, init_method=self.opt.dist_url,
                                     world_size=self.opt.world_size, rank=self.opt.rank)
         
