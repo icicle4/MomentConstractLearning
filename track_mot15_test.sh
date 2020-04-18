@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 export Test_MOT15=true
-DATA_DIR="../"
+DATA_DIR="/content"
 DIS_THRESHOLD=1.0
 CHECKPOINTPATH='/content/drive/My Drive/checkpoint_0105.pth.tar'
 
