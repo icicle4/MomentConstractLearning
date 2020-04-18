@@ -14,7 +14,6 @@ augmentations = [
     normalize
 ]
 
-
 def warp_clip(clip):
     clip = Image.fromarray(cv2.cvtColor(clip, cv2.COLOR_BGR2RGB))
     return transforms.Compose(augmentations)(clip)
