@@ -19,10 +19,10 @@ def py_max_match(scores):
 
 
 class Tracklet:
-    def __init__(self,tracklet_id, history_len=10):
+    def __init__(self,tracklet_id, history_len=20):
         self.tracklet_id = tracklet_id
         self.history_len = history_len
-        self.history_keys = deque(history_len)
+        self.history_keys = deque(maxlen=history_len)
         self.frame_bboxes = {}
         self.frame_list = []
 
