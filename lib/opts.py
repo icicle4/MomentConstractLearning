@@ -30,6 +30,24 @@ class opts(object):
                                       'set load_model to model_last.pth '
                                       'in the exp dir if load_model is empty.')
 
+        self.parser.add_argument('--world-size', default=-1, type=int,
+                            help='number of nodes for distributed training')
+        self.parser.add_argument('--rank', default=-1, type=int,
+                            help='node rank for distributed training')
+        self.parser.add_argument('--dist-url', default='tcp://224.66.41.62:23456', type=str,
+                            help='url used to set up distributed training')
+        self.parser.add_argument('--dist-backend', default='nccl', type=str,
+                            help='distributed backend')
+        self.parser.add_argument('--seed', default=None, type=int,
+                            help='seed for initializing training. ')
+        self.parser.add_argument('--gpu', default=None, type=int,
+                            help='GPU id to use.')
+        self.parser.add_argument('--multiprocessing-distributed', action='store_true',
+                            help='Use multi-processing distributed training to launch '
+                                 'N processes per node, which has N GPUs. This is the '
+                                 'fastest way to use PyTorch for either single node or '
+                                 'multi node data parallel training')
+
         self.parser.add_argument('--dis_threshold', default=0.8, type=float,
                                  help="feature match threshold distance")
 

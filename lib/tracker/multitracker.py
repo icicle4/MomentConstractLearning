@@ -8,6 +8,8 @@ from lib.tracking_utils.utils import *
 from lib.moco import builder
 from lib.moco.loader import warp_clip
 
+import torch.distributed as dist
+
 
 def py_max_match(scores):
     m = Munkres()
@@ -49,16 +51,66 @@ class MCTracker(object):
     def __init__(self, opt):
         self.opt = opt
         self.frame_id = 0
-        opt.device = torch.device('cuda')
+
+        if self.opt.gpu is not None:
+            print("Use GPU: {} for training".format(self.opt.gpu))
+
+        if self.opt.distributed:
+            if self.opt.dist_url == "env://" and self.opt.rank == -1:
+                self.opt.rank = int(os.environ["RANK"])
+            if self.opt.multiprocessing_distributed:
+                # For multiprocessing distributed training, rank needs to be the
+                # global rank among all the processes
+                self.opt.rank = self.opt.rank * self.opt.ngpus_per_node + self.opt.gpu
+            dist.init_process_group(backend=self.opt.dist_backend, init_method=self.opt.dist_url,
+                                    world_size=self.opt.world_size, rank=self.opt.rank)
+        
         print('Creating model...')
         self.model = builder.MoCo(
             models.__dict__[opt.arch],
             opt.moco_dim, opt.moco_k, opt.moco_m, opt.moco_t, opt.mlp
         )
-        self.model = self.model.cuda()
         
-        checkpoint = torch.load(opt.checkpoint)
-        self.model.load_state_dict(checkpoint['state_dict'])
+        if self.opt.distributed:
+            # For multiprocessing distributed, DistributedDataParallel constructor
+            # should always set the single device scope, otherwise,
+            # DistributedDataParallel will use all available devices.
+            if self.opt.gpu is not None:
+                torch.cuda.set_device(self.opt.gpu)
+                self.model.cuda(self.opt.gpu)
+                # When using a single GPU per process and per
+                # DistributedDataParallel, we need to divide the batch size
+                # ourselves based on the total number of GPUs we have
+                self.model = torch.nn.parallel.DistributedDataParallel(self.model, device_ids=[self.opt.gpu])
+            else:
+                self.model.cuda()
+                # DistributedDataParallel will divide and allocate batch_size to all
+                # available GPUs if device_ids are not set
+                model = torch.nn.parallel.DistributedDataParallel(self.model)
+        elif self.opt.gpu is not None:
+            torch.cuda.set_device(self.opt.gpu)
+            self.model = self.model.cuda(self.opt.gpu)
+            # comment out the following line for debugging
+            raise NotImplementedError("Only DistributedDataParallel is supported.")
+        else:
+            # AllGather implementation (batch shuffle, queue update, etc.) in
+            # this code only supports DistributedDataParallel.
+            raise NotImplementedError("Only DistributedDataParallel is supported.")
+
+        if self.opt.checkpoint:
+            if os.path.isfile(self.opt.checkpoint):
+                print("=> loading checkpoint '{}'".format(self.opt.checkpoint))
+                if self.opt.gpu is None:
+                    checkpoint = torch.load(self.opt.checkpoint)
+                else:
+                    # Map model to be loaded to specified single gpu.
+                    loc = 'cuda:{}'.format(self.opt.gpu)
+                    checkpoint = torch.load(self.opt.checkpoint, map_location=loc)
+                self.model.load_state_dict(checkpoint['state_dict'])
+                print("=> loaded checkpoint '{}' (epoch {})"
+                      .format(self.opt.checkpoint, checkpoint['epoch']))
+            else:
+                print("=> no checkpoint found at '{}'".format(self.opt.checkpoint))
         self.model.eval()
         self.tracklet_id = 1
         self.tracklet_pools = [] # type: list[Tracklet]
