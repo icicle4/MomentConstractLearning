@@ -120,16 +120,14 @@ class MCTracker(object):
         print('frame_clip',type(frame_clip))
         print('frame_clip', frame_clip.shape)
         clip = warp_clip(frame_clip)
-        print(self.model.__dir__)
-        q = self.model.encode_q(clip).detach().cpu().numpy()
+        q = self.model.module.encode_q(clip).detach().cpu().numpy()
         return q
 
     def encode_k(self, frame_clip):
         print('frame_clip', type(frame_clip))
         print('frame_clip', frame_clip.shape)
-        print(self.model.__dir__)
         clip = warp_clip(frame_clip)
-        k = self.model.encode_k(clip).detach().cpu().numpy()
+        k = self.model.module.encode_k(clip).detach().cpu().numpy()
         return k
 
     def update(self, frame_clips_and_bboxes):
