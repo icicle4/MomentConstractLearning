@@ -49,12 +49,8 @@ class MCTracker(object):
     def __init__(self, opt):
         self.opt = opt
         self.frame_id = 0
-        if opt.gpus[0] >= 0:
-            opt.device = torch.device('cuda')
-        else:
-            opt.device = torch.device('cpu')
+        opt.device = torch.device('cuda')
         print('Creating model...')
-
         self.model = builder.MoCo(
             models.__dict__[opt.arch],
             opt.moco_dim, opt.moco_k, opt.moco_m, opt.moco_t, opt.mlp
