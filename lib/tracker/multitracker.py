@@ -117,6 +117,8 @@ class MCTracker(object):
         self.tracklet_pools = [] # type: list[Tracklet]
 
     def encode_q(self, frame_clip):
+        print('frame_clip',type(frame_clip))
+        print('frame_clip', frame_clip.shape)
         clip = warp_clip(frame_clip)
         q = self.encode_q(clip).detach().cpu().numpy()
         return q
