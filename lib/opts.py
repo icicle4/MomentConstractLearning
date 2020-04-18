@@ -17,9 +17,6 @@ class opts(object):
         # basic experiment setting
         self.parser.add_argument('task', default='mot', help='mot')
         self.parser.add_argument('--exp_id', default='default')
-        self.parser.add_argument('--test', action='store_true')
-        self.parser.add_argument('--load_model', default='',
-                                 help='path to pretrained model')
 
         self.parser.add_argument('-a', '--arch', metavar='ARCH', default='resnet50',
                                  choices=model_names,
