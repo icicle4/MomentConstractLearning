@@ -5,6 +5,8 @@ from __future__ import print_function
 import argparse
 import os
 import torchvision.models as models
+import torch
+import torch.multiprocessing as mp
 
 model_names = sorted(name for name in models.__dict__
                      if name.islower() and not name.startswith("__")
@@ -123,4 +125,18 @@ class opts(object):
 
     def init(self, args=''):
         opt = self.parse(args)
+
+        if opt.dist_url == "env://" and args.world_size == -1:
+            opt.world_size = int(os.environ["WORLD_SIZE"])
+
+        opt.distributed = opt.world_size > 1 or opt.multiprocessing_distributed
+
+        ngpus_per_node = torch.cuda.device_count()
+        if opt.multiprocessing_distributed:
+            # Since we have ngpus_per_node processes per node, the total world_size
+            # needs to be adjusted accordingly
+            opt.world_size = ngpus_per_node * opt.world_size
+            # Use torch.multiprocessing.spawn to launch distributed processes: the
+            # main_worker process function
+
         return opt
