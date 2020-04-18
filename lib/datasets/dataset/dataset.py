@@ -35,7 +35,7 @@ def clip_peoples(image_name, annotations):
 
 def load_frame_clips(img_dir, det_file):
     img_names = {int(img.split('.')[0]): os.path.join(img_dir, img) for img in os.listdir(img_dir)}
-    print(img_names)
+
     frame_annotations = load_annotation(det_file)
     return (clip_peoples(img_names[img_frame], frame_annotations[img_frame])
                         for img_frame in sorted(img_names.keys())
