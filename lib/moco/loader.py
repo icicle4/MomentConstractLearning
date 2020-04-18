@@ -18,7 +18,7 @@ augmentations = [
 def warp_clip(clip):
     warped_clip = np.copy(clip)
     clip = Image.fromarray(cv2.cvtColor(warped_clip, cv2.COLOR_BGR2RGB))
-    return transforms.Compose(augmentations)(clip)
+    return transforms.Compose(augmentations)(clip).unsqueeze(0)
 
 class TwoCropsTransform:
     """Take two random crops of one image as the query and key."""
