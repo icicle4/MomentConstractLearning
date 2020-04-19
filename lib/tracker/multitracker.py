@@ -30,6 +30,8 @@ class Tracklet:
     def weighted_sum_keys(self):
         weights = np.linspace(0.1, 0.999, self.history_len) / np.sum(np.linspace(0.1, 0.999, self.history_len))
         keys = np.array(self.history_keys)
+        print('weights', weights.shape)
+        print('keys', keys.shape)
         weighted_sum_keys = np.einsum("i, ij->j", weights, keys)
         return weighted_sum_keys
 
