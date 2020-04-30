@@ -118,6 +118,11 @@ class MCTracker(object):
         self.tracklet_id = 1
         self.tracklet_pools = [] # type: list[Tracklet]
 
+    def reset(self):
+        self.frame_id = 0
+        self.tracklet_id = 1
+        self.tracklet_pools = []
+
     def encode_q(self, frame_clip):
         clip = warp_clip(frame_clip)
         q = self.model.module.encoder_q(clip.cuda())

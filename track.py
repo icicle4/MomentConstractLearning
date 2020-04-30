@@ -44,11 +44,11 @@ def write_results(filename, results, data_type):
     logger.info('save results to {}'.format(filename))
 
 
-def eval_seq(opt, dataloader, data_type, result_filename, save_dir=None, show_image=True):
+def eval_seq(opt, tracker, dataloader, data_type, result_filename, save_dir=None, show_image=True):
     if save_dir:
         mkdir_if_missing(save_dir)
 
-    tracker = MCTracker(opt)
+
     timer = Timer()
     results = []
     frame_count = 0
@@ -95,6 +95,8 @@ def main(opt, data_root='/data/MOT16/train', det_root=None, seqs=('MOT16-05',), 
     accs = []
     n_frame = 0
     timer_avgs, timer_calls = [], []
+    tracker = MCTracker(opt)
+
     for seq in seqs:
         output_dir = os.path.join(data_root, '..', 'outputs', exp_name, seq) if save_images or save_videos else None
         logger.info('start seq: {}'.format(seq))
@@ -103,11 +105,12 @@ def main(opt, data_root='/data/MOT16/train', det_root=None, seqs=('MOT16-05',), 
                                                )
         result_filename = os.path.join(result_root, '{}.txt'.format(seq))
 
-        nf, ta, tc = eval_seq(opt, dataloader, data_type, result_filename,
+        nf, ta, tc = eval_seq(opt, tracker, dataloader, data_type, result_filename,
                               save_dir=output_dir, show_image=show_image)
         n_frame += nf
         timer_avgs.append(ta)
         timer_calls.append(tc)
+        tracker.reset()
 
         # eval
         logger.info('Evaluate seq: {}'.format(seq))
