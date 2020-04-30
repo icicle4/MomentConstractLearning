@@ -9,6 +9,7 @@ from lib.moco import builder
 from lib.moco.loader import warp_clip
 
 import torch.distributed as dist
+import torch
 
 
 def py_max_match(scores):
@@ -163,6 +164,11 @@ class MCTracker(object):
                 for j in range(len(grouped_keys)):
                     new_key = new_added_keys[i]
                     old_key = grouped_keys[j]
+
+                    nk = torch.from_numpy(new_key).unsqueeze(dim=0)
+                    ok = torch.from_numpy(new_key).unsqueeze(dim=0)
+                    sim = torch.einsum('nc,nc->n', [nk, ok]).unsqueeze(-1)
+                    print('sim', sim, sim.size())
                     
                     # 相似度越到越靠近1，相似度矩阵的值应该在【0，2】之间，越相似越接近1
                     similarity = 1 - np.einsum('k, k', new_key, old_key)
