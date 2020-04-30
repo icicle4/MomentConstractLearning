@@ -30,8 +30,6 @@ class Tracklet:
     def weighted_sum_keys(self):
         weights = np.linspace(0.1, 0.999, len(self.history_keys)) / np.sum(np.linspace(0.1, 0.999, len(self.history_keys)))
         keys = np.array(self.history_keys)
-        print('weights', weights.shape)
-        print('keys', keys.shape)
         weighted_sum_keys = np.einsum("i, ij->j", weights, keys)
         return weighted_sum_keys
 
@@ -179,7 +177,7 @@ class MCTracker(object):
                         np.zeros((num_added, num_added - num_grouped)) + 2.0
                     )
                 )
-                
+
             print('sim_matrix', sim_matrix)
             pairs = py_max_match(sim_matrix)
 
