@@ -165,12 +165,11 @@ class MCTracker(object):
                 for j in range(i, len(grouped_keys)):
                     new_key = new_added_keys[i]
                     old_key = grouped_keys[j]
-                    print('new_key', new_key.shape)
-                    print('old_key', old_key.shape)
+
                     # 相似度越到越靠近1，相似度矩阵的值应该在【0，2】之间，越相似越接近1
                     similarity = 1 - np.einsum('k, k', new_key, old_key)
                     sim_matrix[i, j] = sim_matrix[j, i] = similarity
-            print('sim_matrix', sim_matrix)
+
             sim_saved = np.copy(sim_matrix)
 
             if num_added > num_grouped:
@@ -180,6 +179,8 @@ class MCTracker(object):
                         np.zeros((num_added, num_added - num_grouped)) + 2.0
                     )
                 )
+                
+            print('sim_matrix', sim_matrix)
             pairs = py_max_match(sim_matrix)
 
             for row, col in pairs:
