@@ -3,12 +3,14 @@ import os
 from collections import defaultdict
 import cv2
 
+
 def load_annotation(det_file):
     with open(det_file, 'r') as f:
         contents = f.readlines()
         res = [
             content.strip().split(',') for content in contents
         ]
+        res = [r for r in res if len(r) == 10]
 
     frame_annotations = defaultdict(list)
     for frame, people_id, xmin, ymin, width, height, conf, _, _, _ in res:
