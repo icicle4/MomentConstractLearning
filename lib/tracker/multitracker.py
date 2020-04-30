@@ -175,7 +175,7 @@ class MCTracker(object):
                     (
                         sim_matrix,
                         np.zeros((num_added, num_added - num_grouped)) + 2.0
-                    )
+                    ), axis = 1
                 )
 
             print('sim_matrix', sim_matrix)
