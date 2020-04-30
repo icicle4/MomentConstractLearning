@@ -120,7 +120,7 @@ class MCTracker(object):
 
     def encode_q(self, frame_clip):
         clip = warp_clip(frame_clip)
-        q = self.model.module.encoder_q(clip.cuda()).detach().cpu().numpy()
+        q = self.model.module.encoder_q(clip.cuda()).detach().cpu().numpy()[0]
         return q
 
     def encode_k(self, frame_clip):
@@ -158,7 +158,7 @@ class MCTracker(object):
             for i in range(len(new_added_keys)):
                 for j in range(i, len(grouped_keys)):
                     new_key = new_added_keys[i]
-                    old_key = new_added_keys[j]
+                    old_key = grouped_keys[j]
                     print('new_key', new_key.shape)
                     print('old_key', old_key.shape)
                     # 相似度越到越靠近1，相似度矩阵的值应该在【0，2】之间，越相似越接近1
