@@ -30,10 +30,12 @@ class Tracklet:
 
     @property
     def weighted_sum_keys(self):
-        weights = np.linspace(0.1, 0.999, len(self.history_keys)) / np.sum(np.linspace(0.1, 0.999, len(self.history_keys)))
-        keys = np.array(self.history_keys)
-        weighted_sum_keys = np.einsum("i, ij->j", weights, keys)
-        return weighted_sum_keys
+        #weights = np.linspace(0.1, 0.999, len(self.history_keys)) / np.sum(np.linspace(0.1, 0.999, len(self.history_keys)))
+        #keys = np.array(self.history_keys)
+        #weighted_sum_keys = np.einsum("i, ij->j", weights, keys)
+        return self.history_keys[-1]
+
+        #return weighted_sum_keys
 
     def update(self, key, bbox, frame):
         self.history_keys.append(key)
