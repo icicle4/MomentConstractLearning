@@ -8,6 +8,7 @@ from lib.tracking_utils.utils import *
 from lib.moco import builder
 from lib.moco.loader import warp_clip
 
+import torch.nn as nn
 import torch.distributed as dist
 import torch
 
@@ -119,12 +120,16 @@ class MCTracker(object):
 
     def encode_q(self, frame_clip):
         clip = warp_clip(frame_clip)
-        q = self.model.module.encoder_q(clip.cuda()).detach().cpu().numpy()[0]
+        q = self.model.module.encoder_q(clip.cuda())
+        norm_q = nn.functional.normalize(q, dim=1)
+        q = norm_q.detach().cpu().numpy()[0]
         return q
 
     def encode_k(self, frame_clip):
         clip = warp_clip(frame_clip)
-        k = self.model.module.encoder_k(clip.cuda()).detach().cpu().numpy()[0]
+        k =  self.model.module.encoder_k(clip.cuda())
+        norm_k = nn.functional.normalize(k, dim=1)
+        k = norm_k.detach().cpu().numpy()[0]
         return k
 
     def update(self, frame_clips_and_bboxes):
