@@ -119,15 +119,11 @@ class MCTracker(object):
         self.tracklet_pools = [] # type: list[Tracklet]
 
     def encode_q(self, frame_clip):
-        print('frame_clip',type(frame_clip))
-        print('frame_clip', frame_clip.shape)
         clip = warp_clip(frame_clip)
         q = self.model.module.encoder_q(clip.cuda()).detach().cpu().numpy()
         return q
 
     def encode_k(self, frame_clip):
-        print('frame_clip', type(frame_clip))
-        print('frame_clip', frame_clip.shape)
         clip = warp_clip(frame_clip)
         k = self.model.module.encoder_k(clip.cuda()).detach().cpu().numpy()
         return k
@@ -157,21 +153,30 @@ class MCTracker(object):
             grouped_keys = np.asarray([tracklet.weighted_sum_keys for tracklet in self.tracklet_pools],
                                       dtype=np.float32)
 
-            dis_matrix = distance.cdist(new_added_keys, grouped_keys)
-            dis_saved = np.copy(dis_matrix)
+            sim_matrix = np.zeros((len(new_added_keys), len(grouped_keys)))
+
+            for i in range(len(new_added_keys)):
+                for j in range(i, len(grouped_keys)):
+                    new_key = new_added_keys[i]
+                    old_key = new_added_keys[j]
+                    # 相似度越到越靠近1，相似度矩阵的值应该在【0，2】之间，越相似越接近1
+                    similarity = 1 - np.einsum('k, k', new_key, old_key)
+                    sim_matrix[i, j] = sim_matrix[j, i] = similarity
+
+            sim_saved = np.copy(sim_matrix)
 
             if num_added > num_grouped:
-                dis_matrix = np.concatenate(
+                sim_matrix = np.concatenate(
                     (
-                        dis_matrix,
-                        np.zeros((num_added, num_added - num_grouped)) + 1e10
+                        sim_matrix,
+                        np.zeros((num_added, num_added - num_grouped)) + 2.0
                     )
                 )
-            pairs = py_max_match(dis_matrix)
+            pairs = py_max_match(sim_matrix)
 
             for row, col in pairs:
                 if (
-                    row < num_added and col < num_grouped and dis_saved[row][col] < self.opt.dis_threshold
+                    row < num_added and col < num_grouped and sim_saved[row][col] < self.opt.dis_threshold
                 ):
                     matched_tracklet = self.tracklet_pools[col]
                     frame_clip, bbox = frame_clips_and_bboxes[row]
