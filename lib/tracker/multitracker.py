@@ -153,6 +153,9 @@ class MCTracker(object):
             grouped_keys = np.asarray([tracklet.weighted_sum_keys for tracklet in self.tracklet_pools],
                                       dtype=np.float32)
 
+            print('new_added', new_added_keys.shape)
+            print('grouped_keys', grouped_keys.shape)
+
             sim_matrix = np.zeros((len(new_added_keys), len(grouped_keys)))
 
             for i in range(len(new_added_keys)):
