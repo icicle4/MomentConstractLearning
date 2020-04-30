@@ -28,7 +28,7 @@ class Tracklet:
 
     @property
     def weighted_sum_keys(self):
-        weights = np.linspace(0.1, 0.999, self.history_len) / np.sum(np.linspace(0.1, 0.999, self.history_len))
+        weights = np.linspace(0.1, 0.999, len(self.history_keys)) / np.sum(np.linspace(0.1, 0.999, len(self.history_keys)))
         keys = np.array(self.history_keys)
         print('weights', weights.shape)
         print('keys', keys.shape)
@@ -125,7 +125,7 @@ class MCTracker(object):
 
     def encode_k(self, frame_clip):
         clip = warp_clip(frame_clip)
-        k = self.model.module.encoder_k(clip.cuda()).detach().cpu().numpy()
+        k = self.model.module.encoder_k(clip.cuda()).detach().cpu().numpy()[0]
         return k
 
     def update(self, frame_clips_and_bboxes):
