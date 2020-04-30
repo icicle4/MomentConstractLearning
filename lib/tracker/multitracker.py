@@ -194,7 +194,7 @@ class MCTracker(object):
                     ), axis = 1
                 )
 
-            print('sim_matrix', sim_matrix)
+            #print('sim_matrix', sim_matrix)
             pairs = py_max_match(sim_matrix)
 
             for row, col in pairs:
