@@ -160,8 +160,8 @@ class MCTracker(object):
             if len(new_added_keys) == 0:
                 return tracked_targets
 
-            print('new_added', new_added_keys.shape)
-            print('grouped_keys', grouped_keys.shape)
+            #print('new_added', new_added_keys.shape)
+            #print('grouped_keys', grouped_keys.shape)
 
             sim_matrix = np.zeros((len(new_added_keys), len(grouped_keys)))
 
@@ -173,11 +173,10 @@ class MCTracker(object):
                     nk = torch.from_numpy(new_key).unsqueeze(dim=0)
                     ok = torch.from_numpy(new_key).unsqueeze(dim=0)
                     sim = torch.einsum('nc,nc->n', [nk, ok]).unsqueeze(-1)
-                    print('sim', sim, sim.size())
-                    print('old_sim', np.einsum('k, k', new_key, old_key))
+                    similarity = sim[0][0]
 
                     # 相似度越到越靠近1，相似度矩阵的值应该在【0，2】之间，越相似越接近1
-                    similarity = 1 - np.einsum('k, k', new_key, old_key)
+                    similarity = 1 - similarity
                     sim_matrix[i, j] = similarity
 
             sim_saved = np.copy(sim_matrix)
