@@ -169,7 +169,7 @@ class MCTracker(object):
                     ok = torch.from_numpy(new_key).unsqueeze(dim=0)
                     sim = torch.einsum('nc,nc->n', [nk, ok]).unsqueeze(-1)
                     print('sim', sim, sim.size())
-                    
+
                     # 相似度越到越靠近1，相似度矩阵的值应该在【0，2】之间，越相似越接近1
                     similarity = 1 - np.einsum('k, k', new_key, old_key)
                     sim_matrix[i, j] = similarity
