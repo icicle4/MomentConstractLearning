@@ -159,6 +159,8 @@ class MCTracker(object):
                 for j in range(i, len(grouped_keys)):
                     new_key = new_added_keys[i]
                     old_key = new_added_keys[j]
+                    print('new_key', new_key.shape)
+                    print('old_key', old_key.shape)
                     # 相似度越到越靠近1，相似度矩阵的值应该在【0，2】之间，越相似越接近1
                     similarity = 1 - np.einsum('k, k', new_key, old_key)
                     sim_matrix[i, j] = sim_matrix[j, i] = similarity
