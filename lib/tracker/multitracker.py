@@ -153,6 +153,9 @@ class MCTracker(object):
             grouped_keys = np.asarray([tracklet.weighted_sum_keys for tracklet in self.tracklet_pools],
                                       dtype=np.float32)
 
+            if len(new_added_keys) == 0:
+                return tracked_targets
+
             print('new_added', new_added_keys.shape)
             print('grouped_keys', grouped_keys.shape)
 
@@ -167,7 +170,7 @@ class MCTracker(object):
                     # 相似度越到越靠近1，相似度矩阵的值应该在【0，2】之间，越相似越接近1
                     similarity = 1 - np.einsum('k, k', new_key, old_key)
                     sim_matrix[i, j] = sim_matrix[j, i] = similarity
-
+            print('sim_matrix', sim_matrix)
             sim_saved = np.copy(sim_matrix)
 
             if num_added > num_grouped:
