@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-export Test_MOT15=true
+export VAL_MOT20=true
 DATA_DIR="/content"
-DIS_THRESHOLD=1.0
+MIN_SIM_THRESH=0.4
 CHECKPOINTPATH="/content/drive/My \Drive/checkpoint_0105.pth.tar"
 
-python track.py --test_mot15 $Test_MOT15  \
-                --dis_threshold $DIS_THRESHOLD \
+python track.py --val_mot20 $VAL_MOT20  \
+                --dis_threshold $MIN_SIM_THRESH \
                 --checkpoint $CHECKPOINTPATH \
                 --data_dir $DATA_DIR
 

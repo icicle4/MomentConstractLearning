@@ -13,12 +13,14 @@ def load_annotation(det_file):
         res = [r for r in res if len(r) == 10]
 
     frame_annotations = defaultdict(list)
-    for frame, people_id, xmin, ymin, width, height, conf, _, _, _ in res:
+
+    for frame, _, xmin, ymin, width, height, _, _, _, _ in res:
         frame_annotations[int(frame)].append(
             [float(xmin), float(ymin), float(width), float(height)]
         )
 
     return frame_annotations
+
 
 def clip_peoples(image_name, annotations):
     clips = list()

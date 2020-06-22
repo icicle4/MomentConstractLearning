@@ -7,6 +7,7 @@ from scipy.spatial import distance
 from lib.tracking_utils.utils import *
 from lib.moco import builder
 from lib.moco.loader import warp_clip
+from lib.utils.softmax import softmax
 
 import torch.nn as nn
 import torch.distributed as dist
@@ -177,15 +178,10 @@ class MCTracker(object):
                     new_key = new_added_keys[i]
                     old_key = grouped_keys[j]
 
-                    nk = torch.from_numpy(new_key).unsqueeze(dim=0)
-                    ok = torch.from_numpy(new_key).unsqueeze(dim=0)
-                    sim = torch.einsum('nc,nc->n', [nk, ok]).unsqueeze(-1)
-                    similarity = sim[0][0]
+                    sim = new_key.dot(old_key)
+                    sim_matrix[i, j] = sim
 
-                    # 相似度越到越靠近1，相似度矩阵的值应该在【0，2】之间，越相似越接近1
-                    similarity = 1 - similarity
-                    sim_matrix[i, j] = similarity
-
+            sim_matrix = 1 - softmax(sim_matrix)
             sim_saved = np.copy(sim_matrix)
 
             if num_added > num_grouped:
@@ -201,7 +197,7 @@ class MCTracker(object):
 
             for row, col in pairs:
                 if (
-                    row < num_added and col < num_grouped and sim_saved[row][col] < self.opt.dis_threshold
+                    row < num_added and col < num_grouped and 1 - sim_saved[row][col] > self.opt.min_sim_thresh
                 ):
                     matched_tracklet = self.tracklet_pools[col]
                     frame_clip, bbox = frame_clips_and_bboxes[row]

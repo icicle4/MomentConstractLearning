@@ -50,7 +50,7 @@ class opts(object):
                                  'fastest way to use PyTorch for either single node or '
                                  'multi node data parallel training')
 
-        self.parser.add_argument('--dis_threshold', default=0.8, type=float,
+        self.parser.add_argument('--min_sim_thresh', default=0.4, type=float,
                                  help="feature match threshold distance")
 
         # system

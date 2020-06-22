@@ -48,7 +48,6 @@ def eval_seq(opt, tracker, dataloader, data_type, result_filename, save_dir=None
     if save_dir:
         mkdir_if_missing(save_dir)
 
-
     timer = Timer()
     results = []
     frame_count = 0
@@ -232,7 +231,7 @@ if __name__ == '__main__':
     main(opt,
          data_root=data_root,
          seqs=seqs,
-         exp_name='MOT15_val_all_dla34',
+         exp_name='MOT20_val',
          show_image=False,
          save_images=False,
          save_videos=False)
